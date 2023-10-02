@@ -8,7 +8,7 @@ GAP_COST = 3
 class AStarSolver_3:
     def __init__(self, seqs):
         self.seqs = seqs
-        self.visited = np.zeros(shape=(len(seqs[0]), len(seqs[1]), len(seqs[2])), dtype=bool)
+        self.visited = np.zeros(shape=(len(seqs[0])+1, len(seqs[1])+1, len(seqs[2])+1), dtype=bool)
         self.queue = PriorityQueue()
         self.init_node = AStarNode(0, (0,0,0), None, self)
         self.end_node = None
@@ -35,25 +35,23 @@ class AStarSolver_3:
         cur_node = self.end_node
         next_pos = None
         cur_pos = None
-        while True:
+        while next_pos != (0,0,0):
             next_pos = cur_node.parent.pos
             cur_pos = cur_node.pos
             if cur_pos[0]==next_pos[0]:
                 seq1 += '*'
             else:
-                seq1 += self.seqs[0][cur_pos[0]]
+                seq1 += self.seqs[0][cur_pos[0]-1]
             if cur_pos[1]==next_pos[1]:
                 seq2 += '*'
             else:
-                seq2 += self.seqs[1][cur_pos[1]]
+                seq2 += self.seqs[1][cur_pos[1]-1]
             if cur_pos[2]==next_pos[2]:
                 seq3 += '*'
             else:
-                seq3 += self.seqs[2][cur_pos[2]]
+                seq3 += self.seqs[2][cur_pos[2]-1]
             cur_node = cur_node.parent
-            if cur_node.pos==(0,0,0):
-                break
-        return (self.seqs[0][0]+seq1[::-1], self.seqs[1][0]+seq2[::-1], self.seqs[2][0]+seq3[::-1])
+        return (seq1[::-1], seq2[::-1], seq3[::-1])
 
 
     
@@ -85,9 +83,9 @@ class AStarNode:
 
     def is_target(self):
         """Return if the node has reached the terminate condition"""
-        return (self.pos[0]==len(self.solver.seqs[0])-1 
-                and self.pos[1]==len(self.solver.seqs[1])-1
-                and self.pos[2]==len(self.solver.seqs[2])-1)
+        return (self.pos[0]==len(self.solver.seqs[0]) 
+                and self.pos[1]==len(self.solver.seqs[1])
+                and self.pos[2]==len(self.solver.seqs[2]))
 
     def Node(self, cost, pos):
         """Return a child node of the current node"""
@@ -101,42 +99,42 @@ class AStarNode:
             self.solver.visited[self.pos] = True
             expand_nodes = []
             # (x,y,z)->(x+1,y,z)
-            if self.pos[0] < len(self.solver.seqs[0])-1:
+            if self.pos[0] < len(self.solver.seqs[0]):
                 next_pos = (self.pos[0]+1, self.pos[1], self.pos[2])
                 expand_nodes.append(self.Node(self.cost+2*GAP_COST, next_pos))
             # (x,y,z)->(x,y+1,z)
-            if self.pos[1] < len(self.solver.seqs[1])-1:
+            if self.pos[1] < len(self.solver.seqs[1]):
                 next_pos = (self.pos[0], self.pos[1]+1, self.pos[2])
                 expand_nodes.append(self.Node(self.cost+2*GAP_COST, next_pos))
             # (x,y,z)->(x,y,z+1)
-            if self.pos[2] < len(self.solver.seqs[2])-1:
+            if self.pos[2] < len(self.solver.seqs[2]):
                 next_pos = (self.pos[0], self.pos[1], self.pos[2]+1)
                 expand_nodes.append(self.Node(self.cost+2*GAP_COST, next_pos))
             # (x,y,z)->(x+1,y+1,z)
-            if self.pos[0] < len(self.solver.seqs[0])-1 and self.pos[1] < len(self.solver.seqs[1])-1:
+            if self.pos[0] < len(self.solver.seqs[0]) and self.pos[1] < len(self.solver.seqs[1]):
                 next_pos = (self.pos[0]+1, self.pos[1]+1, self.pos[2])
                 if self.solver.seqs[0][self.pos[0]] == self.solver.seqs[1][self.pos[1]]:
                     expand_nodes.append(self.Node(self.cost+2*GAP_COST, next_pos))
                 else:
                     expand_nodes.append(self.Node(self.cost+MISMATCH_COST+2*GAP_COST, next_pos))
             # (x,y,z)->(x+1,y,z+1)
-            if self.pos[0] < len(self.solver.seqs[0])-1 and self.pos[2] < len(self.solver.seqs[2])-1:
+            if self.pos[0] < len(self.solver.seqs[0]) and self.pos[2] < len(self.solver.seqs[2]):
                 next_pos = (self.pos[0]+1, self.pos[1], self.pos[2]+1)
                 if self.solver.seqs[0][self.pos[0]] == self.solver.seqs[2][self.pos[2]]:
                     expand_nodes.append(self.Node(self.cost+2*GAP_COST, next_pos))
                 else:
                     expand_nodes.append(self.Node(self.cost+MISMATCH_COST+2*GAP_COST, next_pos))
             # (x,y,z)->(x,y+1,z+1)
-            if self.pos[1] < len(self.solver.seqs[1])-1 and self.pos[2] < len(self.solver.seqs[2])-1:
+            if self.pos[1] < len(self.solver.seqs[1]) and self.pos[2] < len(self.solver.seqs[2]):
                 next_pos = (self.pos[0], self.pos[1]+1, self.pos[2]+1)
                 if self.solver.seqs[1][self.pos[1]] == self.solver.seqs[2][self.pos[2]]:
                     expand_nodes.append(self.Node(self.cost+2*GAP_COST, next_pos))
                 else:
                     expand_nodes.append(self.Node(self.cost+MISMATCH_COST+2*GAP_COST, next_pos))
             # (x,y,z)->(x+1,y+1,z+1)
-            if (self.pos[0] < len(self.solver.seqs[0])-1
-                and self.pos[1] < len(self.solver.seqs[1])-1
-                and self.pos[2] < len(self.solver.seqs[2])-1):
+            if (self.pos[0] < len(self.solver.seqs[0])
+                and self.pos[1] < len(self.solver.seqs[1])
+                and self.pos[2] < len(self.solver.seqs[2])):
                 next_pos = (self.pos[0]+1, self.pos[1]+1, self.pos[2]+1)
                 mismatch_count = 0
                 if self.solver.seqs[0][self.pos[0]] != self.solver.seqs[1][self.pos[1]]:

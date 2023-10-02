@@ -27,6 +27,7 @@ class Tester:
             lower_bound = (AStarSolver_2((seq[0], seq[1])).solve()+
                            AStarSolver_2((seq[0], seq[2])).solve()+
                            AStarSolver_2((seq[1], seq[2])).solve())
+            # 下界高于当前最低匹配代价的直接跳过
             if lower_bound < self.target_match_cost:
                 solver_array[index] = AStarSolver_3(seq)
                 match_cost = solver_array[index].solve()
@@ -35,6 +36,7 @@ class Tester:
                     self.target_match_cost = match_cost
         self.target_seq = dataPairSeq[target_index]
         self.target_solution = solver_array[target_index].align_seq()
+
         end_time = time()
         time_used = end_time - begin_time
 
@@ -47,9 +49,7 @@ class Tester:
         print(self.target_solution[1])
         print(self.target_solution[2])
         print(f'The cost of matching is: {self.target_match_cost}')
-
-        print('\n')
-        print(f'Total time used: {time_used}')
+        print(f'Total time used: {time_used} seconds')
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from tools_2 import AStarSolver_2
+from tools_2 import GeneticSolver_2
 from time import time
 
 class Tester:
@@ -16,7 +16,7 @@ class Tester:
         begin_time = time()
         solver_array = list(range(len(self.dataSeq)))
         for (index, seq) in enumerate(self.dataSeq):
-            solver_array[index] = AStarSolver_2((self.matchSeq, seq))
+            solver_array[index] = GeneticSolver_2((self.matchSeq, seq))
             match_cost = solver_array[index].solve()
             if match_cost < self.target_match_cost:
                 target_index = index
