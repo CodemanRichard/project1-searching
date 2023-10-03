@@ -66,13 +66,25 @@ class AStarNode:
         other.evaluated_cost = other.cost + other.heuristic()
         return self.evaluated_cost < other.evaluated_cost
 
-    # need to implement another heuristic function
     def heuristic(self):
         """The heuristic function of A*"""
         # h(n)定义为两条序列剩下部分长度之差乘上匹配空隙的代价
         len_1 = len(self.solver.seqs[0]) - (self.pos[0]+1)
         len_2 = len(self.solver.seqs[1]) - (self.pos[1]+1)
         return GAP_COST * abs(len_1-len_2)
+    
+    #def heuristic(self):
+    #    """Another heuristic function which is rougher"""
+    #    # h(n)定义为：后一个字符如果不同则加上一个GAP_COST
+    #    len_1 = len(self.solver.seqs[0]) - (self.pos[0]+1)
+    #    len_2 = len(self.solver.seqs[1]) - (self.pos[1]+1)
+    #    if len_1<=0 or len_2<=0:
+    #        return 0
+    #    if self.solver.seqs[0][self.pos[0]+1]==self.solver.seqs[1][self.pos[1]+1]:
+    #        return 0
+    #    else:
+    #        return GAP_COST
+
 
     def is_target(self):
         """Return if the node has reached the terminate condition"""

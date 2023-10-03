@@ -1,0 +1,15 @@
+tuple = 两个 GAP 序列
+
+随机生成八个 tuple 序列，算出它们的 fitness
+|						
+选出其 subset，计算 total fitness-----------------|			
+|						|
+进行 crossover					|
+|						|
+进行 mutation					|
+|						|
+计算 fitness，如果没有上一轮迭代低，count++	|
+|						|
+|------------------------------------------------
+|
+count=50, terminate
